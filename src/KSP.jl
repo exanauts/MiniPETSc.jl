@@ -1,7 +1,7 @@
 """
     Krylov solver
 """
-type PetscKSP
+mutable struct PetscKSP
     ksp::Ref{KSP}
 
     function PetscKSP()

@@ -6,18 +6,20 @@ using Reexport
 
 @reexport using MPI
 
-const library = string(ENV["PETSC_DIR"],"/lib/libpetsc")
+const library = string(ENV["PETSC_DIR"], "/", ENV["PETSC_ARCH"], "/lib/libpetsc")
 
 include("PetscTypes.jl")
 
 function finalize()
     ccall((:PetscFinalize, library), PetscErrorCode, ())
-    MPI.Finalize()
+    # Somehow doesn't work here
+    # MPI.Finalize()
 end
 
 function __init__()
     args = vcat("julia", ARGS)
     nargs = length(args)
+    MPI.Init()
     ccall((:PetscInitializeNoPointers, library), PetscErrorCode, (Cint, Ptr{Ptr{UInt8}}, Cstring, Cstring), nargs, args, C_NULL, C_NULL)
 
     # Cleanup at the end
@@ -41,10 +43,6 @@ export plusEquals!
 export zero!
 export copy!
 export serializeToZero
-
-import Base.scale!
-
-export scale!
 
 export PetscKSP
 export setOperators

@@ -1,9 +1,8 @@
-abstract PetscVecBase <: AbstractArray{PetscScalar}
-
+const PetscVecBase = AbstractVector{PetscScalar}
 """
     A PETSc Vec wrapper.
 """
-type PetscVec <: PetscVecBase
+mutable struct PetscVec <: PetscVecBase
 
     " The pointer to the PETSc Vec object "
     vec::Ref{Vec}
@@ -28,7 +27,7 @@ type PetscVec <: PetscVecBase
 #            println(avec.name)
         end
 
-        finalizer(new_vec, finalize)
+        finalizer(finalize, new_vec)
 
         return new_vec
     end
@@ -45,7 +44,7 @@ end
 """
     A PETSc Vec wrapper for Ghosted Vectors.
 """
-type GhostedPetscVec <: PetscVecBase
+struct GhostedPetscVec <: PetscVecBase
 
     " The pointer to the PETSc Vec object "
     vec::Ref{Vec}
@@ -69,13 +68,13 @@ type GhostedPetscVec <: PetscVecBase
     raw_array_present::Bool
 
     " The raw local array.  This shouldn't be accessed directly!  Use [] to access values. (1-based)"
-    raw_array::Array{PetscScalar}
+    raw_array::Vector{PetscScalar}
 
     " The local form.  Only present if the raw_array is.  Only for internal use!"
     local_form::PetscVec
 
-    function GhostedPetscVec{T}(ghosts::Array{T};
-                                n_local::PetscInt=PETSC_DECIDE, n_global::PetscInt=PETSC_DETERMINE)
+    function GhostedPetscVec(ghosts::Vector{T};
+                                n_local::PetscInt=PETSC_DECIDE, n_global::PetscInt=PETSC_DETERMINE) where T
         vec = Ref{Vec}()
         ghost_dofs = (PetscInt)[dof-1 for dof in ghosts]
         ccall((:VecCreateGhost, library), PetscErrorCode, (comm_type, PetscInt, PetscInt, PetscInt, Ptr{PetscInt}, Ref{Vec}),
@@ -208,7 +207,7 @@ end
 
     Does vec[i] += v
 """
-function plusEquals!{T}(vec::PetscVecBase, v::Array{T}, i)
+function plusEquals!(vec::PetscVecBase, v::Array{T}, i) where T
     plusEquals!(vec, (Float64)[(Float64)(val) for val in v], i)
 end
 
@@ -291,7 +290,6 @@ function similar(vec::PetscVec)
     return new_vec
 end
 
-import Base.norm
 """
     L2 Norm
 """
@@ -327,8 +325,6 @@ function serializeToZero(vec::PetscVecBase)
 end
 
 #### AbstractArray Interface Definitions ###
-
-import Base.linearindexing
 
 """
     PETSc Vectors are inherently 1D
@@ -395,7 +391,7 @@ end
 """
     Proper getter for entries from the vector for integer indices
 """
-function getindex{T<:Integer}(vec::PetscVecBase, i::T)
+function getindex(vec::PetscVecBase, i::T) where T<:Integer
     # Don't forget about 1-based indexing...
     i_ind = (PetscInt)[i-1]
 
@@ -440,7 +436,7 @@ end
 """
     Proper getter for entries from the vector for integer indices for Ghosted Vectors
 """
-function getindex{T<:Integer}(vec::GhostedPetscVec, i::T)
+function getindex(vec::GhostedPetscVec, i::T) where T<:Integer
     if !vec.raw_array_present
         _getArray(vec)
     end

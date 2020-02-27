@@ -1,7 +1,7 @@
 """
     A PETSc Mat wrapper.
 """
-type PetscMat <: AbstractMatrix{PetscScalar}
+mutable struct PetscMat <: AbstractMatrix{PetscScalar}
 
     " The pointer to the PETSc Mat object "
     mat::Ref{Mat}
@@ -87,7 +87,7 @@ end
 
     If the values coming in aren't Floats then we need to make them so
 """
-function plusEquals!{T}(mat::PetscMat, v::Matrix{T}, i, j)
+function plusEquals!(mat::PetscMat, v::Matrix{T}, i, j) where T
     plusEquals!(mat, float(v), i, j)
 end
 
@@ -125,8 +125,6 @@ function zeroRows!(mat::PetscMat, i)
 end
 
 #### AbstractArray Interface Definitions ###
-
-import Base.linearindexing
 
 """
     PETSc Matrices are inherently 2D
@@ -210,7 +208,7 @@ end
 """
     Proper getter for entries from the matrix for integer indices
 """
-function getindex{T<:Integer}(mat::PetscMat, i::T, j::T)
+function getindex(mat::PetscMat, i::T, j::T) where T
     # Don't forget about 1-based indexing...
     i_ind = (PetscInt)[i-1]
     j_ind = (PetscInt)[j-1]

@@ -1,15 +1,15 @@
 # Note: some definitions in this file come from PETSc.jl
 
-typealias PetscErrorCode Cint
-typealias comm_type MPI.CComm
+const PetscErrorCode = Cint
+const comm_type = MPI.Comm
 
-typealias Mat Ptr{Void}
+const Mat = Ptr{Nothing}
 
-typealias PetscViewer Ptr{Void}
+PetscViewer = Ptr{Nothing}
 
-typealias PetscInt Int32
-typealias PetscScalar Float64
-typealias PetscBool UInt32
+PetscInt = Int32
+PetscScalar = Float64
+PetscBool = UInt32
 
 const PETSC_FALSE = (UInt32)(0)
 const PETSC_TRUE = (UInt32)(1)
@@ -19,13 +19,13 @@ const PETSC_DECIDE = (Int32)(-1)
 const PETSC_DETERMINE = PETSC_DECIDE
 const PETSC_DEFAULT = (Int32)(-2)
 
-typealias MatType Ptr{UInt8}
+const MatType = Ptr{UInt8}
 const MATAIJ = "aij"
 
-typealias MatAssemblyType UInt32
+const MatAssemblyType = UInt32
 const MAT_FINAL_ASSEMBLY = (UInt32)(0)
 
-typealias InsertMode UInt32
+const InsertMode = UInt32
 const NOT_SET_VALUES = (UInt32)(0)
 const INSERT_VALUES = (UInt32)(1)
 const ADD_VALUES = (UInt32)(2)
@@ -35,7 +35,7 @@ const ADD_ALL_VALUES = (UInt32)(5)
 const INSERT_BC_VALUES = (UInt32)(6)
 const ADD_BC_VALUES = (UInt32)(7)
 
-typealias MatOption Cint
+const MatOption = Cint
 const MAT_OPTION_MIN = (Int32)(-5)
 const MAT_NEW_NONZERO_LOCATION_ERR = (Int32)(-4)
 const MAT_UNUSED_NONZERO_LOCATION_ERR = (Int32)(-3)
@@ -63,20 +63,20 @@ const MAT_OPTION_MAX = (Int32)(19)
 
 
 
-typealias Vec Ptr{Void}
-typealias VecType Ptr{UInt8}
+const Vec = Ptr{Nothing}
+const VecType = Ptr{UInt8}
 const VECMPI = "mpi"
 
-typealias ScatterMode UInt32
+const ScatterMode = UInt32
 const SCATTER_FORWARD = (UInt32)(0)
 const SCATTER_REVERSE = (UInt32)(1)
 const SCATTER_FORWARD_LOCAL = (UInt32)(2)
 const SCATTER_REVERSE_LOCAL = (UInt32)(3)
 const SCATTER_LOCAL = (UInt32)(2)
 
-typealias KSP Ptr{Void}
+const KSP = Ptr{Nothing}
 
-typealias KSPType Ptr{UInt8}
+const KSPType = Ptr{UInt8}
 const KSPRICHARDSON = "richardson"
 const KSPCHEBYSHEV = "chebyshev"
 const KSPCG = "cg"
@@ -113,11 +113,11 @@ const KSPPYTHON = "python"
 const KSPGCR = "gcr"
 
 
-typealias ISLocalToGlobalMapping Ptr{Void}
+const ISLocalToGlobalMapping = Ptr{Nothing}
 
-typealias VecScatter Ptr{Void}
+const VecScatter = Ptr{Nothing}
 
-typealias ScatterMode UInt32
+const ScatterMode = UInt32
 
 const SCATTER_FORWARD = (UInt32)(0)
 const SCATTER_REVERSE = (UInt32)(1)
@@ -125,7 +125,7 @@ const SCATTER_FORWARD_LOCAL = (UInt32)(2)
 const SCATTER_REVERSE_LOCAL = (UInt32)(3)
 const SCATTER_LOCAL = (UInt32)(2)
 
-typealias NormType UInt32
+const NormType = UInt32
 
 const NORM_1 = (UInt32)(0)
 const NORM_2 = (UInt32)(1)

@@ -1,4 +1,4 @@
-const PetscVecBase = AbstractVector{PetscScalar}
+abstract type PetscVecBase <: AbstractVector{PetscScalar} end
 """
     A PETSc Vec wrapper.
 """
@@ -395,7 +395,7 @@ function getindex(vec::PetscVecBase, i::T) where T<:Integer
     # Don't forget about 1-based indexing...
     i_ind = (PetscInt)[i-1]
 
-    get_vals = Array{Float64}(1)
+    get_vals = Vector{Float64}(undef, 1)
 
     ccall((:VecGetValues, library), PetscErrorCode, (Vec, PetscInt, Ptr{PetscInt}, Ref{PetscScalar}), vec.vec[], 1, i_ind, get_vals)
 
@@ -408,7 +408,7 @@ end
 function getindex(vec::PetscVecBase, i)
     i_ind = (PetscInt)[i_val-1 for i_val in i]
 
-    get_vals = Array{Float64}(length(i_ind))
+    get_vals = Vector{Float64}(undef, length(i_ind))
 
     ccall((:VecGetValues, library), PetscErrorCode, (Vec, PetscInt, Ptr{PetscInt}, Ref{PetscScalar}), vec.vec[], length(i_ind), i_ind, get_vals)
 

@@ -1,6 +1,6 @@
 using MiniPETSc
 
-using Base.Test
+using Test
 
 if MPI.Comm_size(MPI.COMM_WORLD) == 1
     include("test_Mat.jl")

@@ -97,7 +97,7 @@ end
 function plusEquals!(mat::PetscMat, v::Matrix{Float64}, i, j)
     # TODO: do the transpose faster (with loops so there are less copies
     # The transpose is to go from column-major to row-major
-    v_T = reshape(v', length(v))
+    v_T = Vector{Float64}(reshape(v', length(v)))
 
     # Convert the indices to 0-based indexing
     i_ind = (PetscInt)[i_val-1 for i_val in i]
@@ -208,12 +208,12 @@ end
 """
     Proper getter for entries from the matrix for integer indices
 """
-function getindex(mat::PetscMat, i::T, j::T) where T
+function getindex(mat::PetscMat, i::T, j::T) where T<:Integer
     # Don't forget about 1-based indexing...
     i_ind = (PetscInt)[i-1]
     j_ind = (PetscInt)[j-1]
 
-    get_vals = Array{Float64}(1)
+    get_vals = Vector{Float64}(undef, 1)
 
     ccall((:MatGetValues, library), PetscErrorCode, (Mat, PetscInt, Ptr{PetscInt}, PetscInt, Ptr{PetscInt}, Ref{PetscScalar}), mat.mat[], 1, i_ind, 1, j_ind, get_vals)
 
@@ -227,7 +227,7 @@ function getindex(mat::PetscMat, i, j)
     i_ind = (PetscInt)[i_val-1 for i_val in i]
     j_ind = (PetscInt)[j_val-1 for j_val in j]
 
-    get_vals = Array{Float64}(length(i_ind) * length(j_ind))
+    get_vals = Vector{Float64}(undef, length(i_ind) * length(j_ind))
 
     ccall((:MatGetValues, library), PetscErrorCode, (Mat, PetscInt, Ptr{PetscInt}, PetscInt, Ptr{PetscInt}, Ref{PetscScalar}), mat.mat[], length(i_ind), i_ind, length(j_ind), j_ind, get_vals)
 
